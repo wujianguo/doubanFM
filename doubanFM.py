@@ -81,9 +81,9 @@ class MusicPlayer():
         if download and url and file_path:
             downFile(url,file_path)
         if url:
-            os.system('ffplay '+url+' -nodisp -autoexit 1>null 2>null')
+            os.system('ffplay '+url+' -nodisp -autoexit 1>/dev/null 2>/dev/null')
         elif file_path:
-            os.system('ffplay -i '+file_path+' -nodisp -autoexit 1>null 2>null')
+            os.system('ffplay -i '+file_path+' -nodisp -autoexit 1>/dev/null 2>/dev/null')
     def onMessage(self):
         pass
     def pause(self):
