@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import json, requests, os.path, os
+import json, requests, os.path, subprocess
 MUSIC_DIR = os.path.dirname(os.path.realpath(__file__))
 class DoubanFM():
     def __init__(self):
@@ -8,7 +8,7 @@ class DoubanFM():
         self.history = []
         self.song_list = []
         self.channel = 1
-        self.cur_song = ''
+        self.cur_song = {'sid':''}
         self.proxy = None
     def login(self,email,passwd):
         payload={'email':email,'password':passwd,'app_name':'radio_desktop_win','version':100}
@@ -36,17 +36,15 @@ class DoubanFM():
     def getParams(self,channel):
         type = 'n'
         h = ''
-        sid = ''
         if len(self.history)>0:
             type = 'p'
             h = '|'+':s|'.join([x['sid'] for x in self.history])+':s'
-            sid = self.cur_song['sid']
             self.history = []
         if self.logined:
             params = {'app_name':'radio_desktop_win','version':100,'user_id':self.user_id,
-                'expire':self.expire,'token':self.token,'type':type,'sid':sid,'h':h,'channel':channel}
+                'expire':self.expire,'token':self.token,'type':type,'sid':self.cur_song['sid'],'h':h,'channel':channel}
         else:
-            params = {'app_name':'radio_desktop_win','version':100,'type':type,'sid':sid,'h':h,'channel':channel}
+            params = {'app_name':'radio_desktop_win','version':100,'type':type,'sid':self.cur_song['sid'],'h':h,'channel':channel}
         return params
     def getSongList(self,channel):
         url = 'http://www.douban.com/j/app/radio/people'
@@ -77,21 +75,13 @@ class MusicPlayer():
         while True:
             song = doubanFM.playSong()
             self.playing(url=song['url'])
-    def playing(self,url='',file_path='',download=False):
-        if download and url and file_path:
-            downFile(url,file_path)
-        if url:
-            os.system('ffplay '+url+' -nodisp -autoexit 1>/dev/null 2>/dev/null')
-        elif file_path:
-            os.system('ffplay -i '+file_path+' -nodisp -autoexit 1>/dev/null 2>/dev/null')
-    def onMessage(self):
-        pass
-    def pause(self):
-        pass
-    def skip(self):
-        pass
-    def downFile(self,url,file_path):#Asynchronous
-        pass
+    def playing(self,url):
+        cmd = ['ffplay',url,'-nodisp','-autoexit']
+        pro = subprocess.Popen(cmd,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+        try:
+            pro.communicate()
+        except Exception,e:
+            pro.terminate()
 def main():
     player = MusicPlayer()
     player.running()
