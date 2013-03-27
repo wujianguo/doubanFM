@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import json, requests, os.path, subprocess
-MUSIC_DIR = os.path.dirname(os.path.realpath(__file__))
 class DoubanFM():
     def __init__(self):
         self.logined = False
@@ -9,14 +8,15 @@ class DoubanFM():
         self.song_list = []
         self.channel = 1
         self.cur_song = {'sid':''}
+#        self.proxy = {'http':'http://127.0.0.1:9341'}
         self.proxy = None
     def login(self,email,passwd):
         payload={'email':email,'password':passwd,'app_name':'radio_desktop_win','version':100}
         url = 'http://www.douban.com/j/app/login'
         r = requests.post(url, data=payload,proxies=self.proxy)
-        print r.text
         data = r.json
         if data['err']!='ok':
+            print('login failed')
             return False
         self.user_id = data['user_id']
         self.expire = data['expire']
@@ -31,7 +31,7 @@ class DoubanFM():
         song = self.song_list.pop(0)
         self.history.append(song)
         self.cur_song = song
-        print(song['title'])
+        print('%s %s'%(song['artist'],song['title']))
         return song
     def getParams(self,channel):
         type = 'n'
@@ -71,7 +71,8 @@ class MusicPlayer():
             email = raw_input("email:") 
             import getpass
             password = getpass.getpass("password:") 
-            doubanFM.login(email,password)
+            if not doubanFM.login(email,password):
+                doubanFM.changeChannel(1)
         while True:
             song = doubanFM.playSong()
             self.playing(url=song['url'])
