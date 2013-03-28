@@ -14,7 +14,7 @@ class DoubanFM():
         payload={'email':email,'password':passwd,'app_name':'radio_desktop_win','version':100}
         url = 'http://www.douban.com/j/app/login'
         r = requests.post(url, data=payload,proxies=self.proxy)
-        data = r.json
+        data = r.json()
         if data['err']!='ok':
             print('login failed')
             return False
@@ -50,11 +50,11 @@ class DoubanFM():
         url = 'http://www.douban.com/j/app/radio/people'
         payload = self.getParams(channel)
         r = requests.get(url,params=payload,proxies=self.proxy)
-        return r.json['song']
+        return r.json()['song']
     def getChannels(self):
         url = 'http://www.douban.com/j/app/radio/channels'
         r = requests.get(url,proxies=self.proxy)
-        return r.json['channels']
+        return r.json()['channels']
     def printChannels(self):
         self.channels = ''
         if not self.channels:
