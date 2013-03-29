@@ -14,7 +14,7 @@ class DoubanFM():
         payload={'email':email,'password':passwd,'app_name':'radio_desktop_win','version':100}
         url = 'http://www.douban.com/j/app/login'
         r = requests.post(url, data=payload,proxies=self.proxy)
-        data = r.json
+        data = r.json()
         if data['err']!='ok':
             print('login failed')
             return False
@@ -30,6 +30,8 @@ class DoubanFM():
             self.song_list.extend(self.getSongList(self.channel))
         song = self.song_list.pop(0)
         self.history.append(song)
+        if len(self.history) > 15:
+            self.history.pop(0)
         self.cur_song = song
         print('%s %s'%(song['artist'],song['title']))
         return song
@@ -38,7 +40,7 @@ class DoubanFM():
         h = ''
         if len(self.history)>0:
             type = 'p'
-            h = '|'+':s|'.join([x['sid'] for x in self.history])+':s'
+            h = '|'+':p|'.join([x['sid'] for x in self.history])+':p'
             self.history = []
         if self.logined:
             params = {'app_name':'radio_desktop_win','version':100,'user_id':self.user_id,
@@ -50,11 +52,11 @@ class DoubanFM():
         url = 'http://www.douban.com/j/app/radio/people'
         payload = self.getParams(channel)
         r = requests.get(url,params=payload,proxies=self.proxy)
-        return r.json['song']
+        return r.json()['song']
     def getChannels(self):
         url = 'http://www.douban.com/j/app/radio/channels'
         r = requests.get(url,proxies=self.proxy)
-        return r.json['channels']
+        return r.json()['channels']
     def printChannels(self):
         self.channels = ''
         if not self.channels:
