@@ -62,7 +62,7 @@ class DoubanFM():
         if not self.channels:
             self.channels = self.getChannels()
         for channel in self.channels:
-            print('%d\t%s\t%s'%(channel['channel_id'],channel['name'],channel['name_en']))
+            print('%s\t%s\t%s'%(channel['channel_id'],channel['name'],channel['name_en']))
 class MusicPlayer():
     def running(self):
         doubanFM = DoubanFM()
