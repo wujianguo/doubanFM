@@ -3,7 +3,7 @@ doubanFM
 A <http://douban.fm> client for shell
 Version
 ---------
-v1.0
+v1.1
 *******
 References
 ---------
